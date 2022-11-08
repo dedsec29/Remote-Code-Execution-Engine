@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { nanoid } = require("nanoid");
+const Producer = require("../producer");
+const producer = new Producer();
 
 // Receive a submission
 router.post("/", async (req, res) => {
@@ -13,6 +15,8 @@ router.post("/", async (req, res) => {
     };
 
     // Send to worker now
+    await producer.publishMessage(req.body.lang, data);
+
     res.status(202).json({
       success: true,
       submission_id: data.id,
