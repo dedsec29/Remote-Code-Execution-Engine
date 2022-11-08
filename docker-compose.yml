@@ -1,0 +1,10 @@
+version: "2.3"
+services:
+  rabbitmq:
+    image: "rabbitmq"
+    restart: always
+  server:
+    build: ./server
+    restart: always
+    ports:
+      - "7000:7000"
