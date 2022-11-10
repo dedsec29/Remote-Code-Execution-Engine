@@ -14,8 +14,8 @@ router.post("/", async (req, res) => {
       id: nanoid(10),
     };
 
-    // Send to worker now
-    await producer.publishMessage(req.body.lang, data);
+    // Send to worker now     <routing key>
+    await producer.publishMessage("worker", data);
 
     res.status(202).json({
       success: true,
