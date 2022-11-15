@@ -10,25 +10,33 @@ class Producer {
   channel;
 
   async createChannel() {
-    const connection = await amqp.connect(url);
-    this.channel = await connection.createChannel();
+    try {
+      const connection = await amqp.connect(url);
+      this.channel = await connection.createChannel();
+    } catch (e) {
+      console.log(e.message);
+    }
   }
 
   async publishMessage(routingKey, message) {
-    if (!this.channel) {
-      await this.createChannel();
+    try {
+      if (!this.channel) {
+        await this.createChannel();
+      }
+
+      await this.channel.assertExchange(exchangeName, "direct");
+      await this.channel.publish(
+        exchangeName,
+        routingKey,
+        Buffer.from(JSON.stringify(message))
+      );
+
+      console.log(
+        `The new ${routingKey} submit request is sent to exchange ${exchangeName}`
+      );
+    } catch (e) {
+      console.log(e.message);
     }
-
-    await this.channel.assertExchange(exchangeName, "direct");
-    await this.channel.publish(
-      exchangeName,
-      routingKey,
-      Buffer.from(JSON.stringify(message))
-    );
-
-    console.log(
-      `The new ${routingKey} submit request is sent to exchange ${exchangeName}`
-    );
   }
 }
 
