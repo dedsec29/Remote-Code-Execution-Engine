@@ -5,5 +5,5 @@ COPY package.json .
 RUN npm install
 COPY . .
 
-RUN apk update && apk add bash
+RUN apk update && apk add --no-cache bash
 CMD ["npm","start"]

@@ -1,4 +1,8 @@
 require("dotenv").config();
+const util = require("util");
+const executeCommand = util.promisify(require("child_process").exec);
+const Dockerode = require("dockerode");
+const dockerode = new Dockerode();
 const amqp = require("amqplib");
 const { downloadFromS3AndWrite } = require("./utils/s3");
 const extensions = require("./utils/extensions");
@@ -31,6 +35,7 @@ async function consumeMessage() {
         console.log("Consuming sirrr");
         // Step 1
         const data = JSON.parse(msg.content);
+
         // Step 2
         const src_location = `./images/${data.lang}/code.${
           extensions[data.lang]
@@ -43,7 +48,29 @@ async function consumeMessage() {
         );
         if (!success2a || !success2b)
           throw "Download and Saving from s3 unsuccessful";
+
         // Step 3
+        // const command1 = `docker build -t rce/spawner ./images/${data.lang}/`;
+        // await executeCommand(command1);
+
+        // const docker_data = await dockerode.run(
+        //   image_tag,
+        //   ["echo", "Spinning.."],
+        //   process.stdout,
+        //   {
+        //     name: container_name,
+        //   }
+        // );
+        // const output = docker_data[0];
+        // const container = docker_data[1];
+        // console.log("Status code = ", output.StatusCode);
+        // console.log("Container spinned");
+        // const archive = await container.getArchive({
+        //   id: container_name,
+        //   path: "output.txt",
+        // });
+        // console.log("Checkpoint");
+        // console.log(archive);
 
         channel.ack(msg);
       } catch (e) {

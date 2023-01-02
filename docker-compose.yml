@@ -21,3 +21,5 @@ services:
     depends_on:
       - rabbitmq
       - server
+    volumes:      
+      - /var/run/docker.sock:/var/run/docker.sock
