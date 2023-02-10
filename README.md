@@ -35,3 +35,4 @@ Notes:
 - Uploading output file generated to a datastore like S3 to be added soon.
 - Memory limit 150MB
 - Time limit to be added soon
+- Git by default changes LF line endings to CRLF. For all files with extension '.sh', we strictly need them in LF. Make sure to change all '.sh' files to LF
