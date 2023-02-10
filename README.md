@@ -18,6 +18,7 @@ In the root directory of the app, run the following commands -
 - docker volume create shared
 - docker build --no-cache -t rce/spawner worker/images/cpp
 - docker-compose up --build
+- Make .env and config.json file in /worker containing AWS credentials
 
 How to use:
 
