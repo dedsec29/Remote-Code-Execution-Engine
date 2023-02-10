@@ -19,6 +19,15 @@ In the root directory of the app, run the following commands -
 - docker build --no-cache -t rce/spawner worker/images/cpp
 - docker-compose up --build
 
+How to use:
+
+- Send a post request to http://localhost:7000/api/submit with following attributes in the shown example:
+  {
+  "src": "https://rce-upload.s3.ap-south-1.amazonaws.com/hello.cpp",
+  "stdin": "https://rce-upload.s3.ap-south-1.amazonaws.com/input.txt",
+  "lang": "cpp"
+  }
+
 Notes:
 
 - Currently only supports C++ files. Other languages to be added soon.
