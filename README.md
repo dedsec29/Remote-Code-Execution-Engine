@@ -23,9 +23,9 @@ How to use:
 
 - Send a post request to http://localhost:7000/api/submit with following attributes in the shown example:
   {
-  "src": "https://rce-upload.s3.ap-south-1.amazonaws.com/hello.cpp",
-  "stdin": "https://rce-upload.s3.ap-south-1.amazonaws.com/input.txt",
-  "lang": "cpp"
+  "src": s3-link-to-source-file,
+  "stdin": s3-link-to-input-file,
+  "lang": language-extension-of-source-file
   }
 
 Notes:
