@@ -6,6 +6,8 @@ const dockerode = new Dockerode();
 const amqp = require("amqplib");
 const { downloadFromS3AndWrite } = require("./utils/s3");
 const extensions = require("./utils/extensions");
+const fs = require("fs");
+var path = require("path");
 
 const {
   url,
@@ -13,13 +15,6 @@ const {
   queueName,
   bindingKey,
 } = require("./config/rabbitmq");
-
-// 1. Get data from buffer of message
-// 2. Download from s3 and save locally
-// 3. Build and Run docker container
-// 4. Upload output to s3
-// 5. Save {submission id, aws-link}
-// 6. Remove container
 
 async function consumeMessage() {
   try {
@@ -32,15 +27,21 @@ async function consumeMessage() {
     // consume
     channel.consume(q.queue, async (msg) => {
       try {
-        console.log("Consuming sirrr");
+        console.log("Consuming..");
         // Step 1
         const data = JSON.parse(msg.content);
 
         // Step 2
-        const src_location = `./images/${data.lang}/code.${
+
+        // make folder for current submission
+        const dir = path.join(__dirname, "shared", `${data.id}`);
+        await fs.promises.mkdir(dir);
+        console.log("folder created");
+
+        const src_location = `./shared/${data.id}/code.${
           extensions[data.lang]
         }`;
-        const input_location = `./images/${data.lang}/input.txt`;
+        const input_location = `./shared/${data.id}/input.txt`;
         const success2a = await downloadFromS3AndWrite(data.src, src_location);
         const success2b = await downloadFromS3AndWrite(
           data.input,
@@ -49,28 +50,18 @@ async function consumeMessage() {
         if (!success2a || !success2b)
           throw "Download and Saving from s3 unsuccessful";
 
-        // Step 3
-        // const command1 = `docker build -t rce/spawner ./images/${data.lang}/`;
-        // await executeCommand(command1);
+        const command = `docker run -e ID='${data.id}' -v shared:/usr/${data.lang}/shared rce/spawner`;
+        await executeCommand(command);
+        console.log("container spinned..");
 
-        // const docker_data = await dockerode.run(
-        //   image_tag,
-        //   ["echo", "Spinning.."],
-        //   process.stdout,
-        //   {
-        //     name: container_name,
-        //   }
-        // );
-        // const output = docker_data[0];
-        // const container = docker_data[1];
-        // console.log("Status code = ", output.StatusCode);
-        // console.log("Container spinned");
-        // const archive = await container.getArchive({
-        //   id: container_name,
-        //   path: "output.txt",
-        // });
-        // console.log("Checkpoint");
-        // console.log(archive);
+        const path1 = path.join(
+          __dirname,
+          "shared",
+          `${data.id}`,
+          "output.txt"
+        );
+        var string = fs.readFileSync(path1, "utf8");
+        console.log("content of output = ", string);
 
         channel.ack(msg);
       } catch (e) {

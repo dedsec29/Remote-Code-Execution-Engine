@@ -1,7 +1,7 @@
 FROM gcc:latest
 
-COPY . /usr/src/cpp
-WORKDIR /usr/src/cpp
+COPY . /usr/cpp
+WORKDIR /usr/cpp
 
 RUN chmod +x script.sh
-RUN ./script.sh
+ENTRYPOINT ./script.sh

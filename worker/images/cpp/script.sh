@@ -1,4 +1,2 @@
-g++ code.cpp -o code
-./code < input.txt > output.txt
-cat output.txt
-echo 222
+g++ ./shared/$ID/code.cpp -o code
+./code < ./shared/$ID/input.txt > ./shared/$ID/output.txt
